@@ -10,6 +10,10 @@ Scenes (run() strings them together with scrolling text, repeating forever):
   plasma            smooth, swirling colour field
   ripple            rings spreading out from random points
 
+Helpers for building your own sequence:
+  print_text(canvas, "HELLO!", "azure")   first 6 chars, static; colour optional
+  pause(canvas, 2)                        hold the current picture 2 s
+
 STOPPING IT
   Press Ctrl-C. The display is cleared on the way out, so it will not be
   left with pixels stuck on.
@@ -183,6 +187,33 @@ def scroll(canvas, text, speed_ms=45, blink_ms=None):
         canvas.show()
         step += 1
         pace(frame, speed_ms)
+
+
+def print_text(canvas, text, colour=None):
+    """Show the first 6 characters of text, one per block, and leave them lit.
+
+    colour: a palette name ("red"), a full-scale (r, g, b), or None for a
+    rainbow running left to right. Named print_text so the builtin print()
+    keeps working in this module.
+    """
+    if isinstance(colour, str):
+        colour = text6x6.hue(colour)
+    elif colour is not None:
+        colour = text6x6.dim(colour)
+    text = text[:W // text6x6.W]
+    canvas.clear()
+    for b, ch in enumerate(text):
+        for y, row in enumerate(font6x6.get(ch)):
+            for x, cell in enumerate(row):
+                if cell != ".":
+                    cx = b * text6x6.W + x
+                    canvas.set(cx, y, colour or WHEEL[cx * WHEEL_N // W])
+    canvas.show()
+
+
+def pause(canvas, seconds=1.0):
+    """Hold whatever is on the display for `seconds`."""
+    time.sleep_ms(int(seconds * 1000))
 
 
 def squares_zoom(canvas, times=3, hold_ms=190):
@@ -375,6 +406,8 @@ def run():
             comet(canvas, 5)
             rain(canvas, 5)
             plasma(canvas, 5)
+            print_text(canvas, "LANOX!", "azure")
+            pause(canvas, 2)
             ripple(canvas, 5)
     except KeyboardInterrupt:
         print("\nstopped")
