@@ -16,7 +16,7 @@ import font6x6
 PINS = [10, 9, 7, 6, 2, 1]      # block 1..6, right to left
 W = font6x6.WIDTH
 H = font6x6.HEIGHT
-LEVEL = 60                      # per-channel; keeps 6 blocks near ~0.5 A
+LEVEL = 10                      # per-channel; keeps 6 blocks near ~0.5 A
 
 # --- within-block mapping -------------------------------------------------
 # Confirmed on this hardware: pixel 0 sits in the TOP RIGHT of each block and
