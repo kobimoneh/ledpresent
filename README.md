@@ -145,12 +145,19 @@ letter cases map to the same glyph.
 
 ## The light show
 
-`show.py` loops four scenes forever (~15.9 s per cycle):
+`show.py` loops these scenes forever (~40 s per cycle):
 
-1. diagonal rainbow sweep, 2 s
-2. `Good luck Eden!` scrolling, colour flowing along the text — 5.7 s
-3. squares zooming inward on every block, each block a different colour, 3× — 1.9 s
-4. `Chiquititas rule!` scrolling while it blinks — 6.3 s
+1. diagonal rainbow sweep — 2 s
+2. `Reality` scrolling while it blinks
+3. fire — 5 s
+4. sparkle — 5 s
+5. comet — 5 s
+6. rain — 5 s
+7. plasma — 5 s
+8. `LANOX!` shown still in azure — 2 s
+9. ripple — 5 s
+
+`squares_zoom` is still in `show.py` but is not in the loop.
 
 Start it:
 
@@ -211,7 +218,7 @@ That makes a boot-time start visible on the serial console.
 
 ### Editing the show
 
-Scene functions (`rainbow_diagonal`, `scroll`, `squares_zoom`) each take the
+Scene functions (`rainbow_diagonal`, `scroll`, `fire`, `print_text`, `pause`, …) each take the
 canvas plus timing arguments, and the order lives in `run()` — so reordering,
 retiming or dropping a scene is a one-line change. Text is passed in, so
 `scroll(canvas, 'Anything you like')` just works.
@@ -227,6 +234,20 @@ dark phases so the message travels at a steady pace:
 Longer messages simply take longer — a scroll pass is
 `(len(text) * 6 + 36)` columns at `speed_ms` each. Raise `speed_ms` to slow
 it down, lower it to speed up.
+
+For still text, `print_text()` shows the **first 6 characters**, one per
+block, and leaves them lit; anything longer is cut off. `pause()` holds
+whatever is on the display for a number of seconds, so the two go together:
+
+    print_text(canvas, 'LANOX!', 'azure')       # palette name
+    pause(canvas, 2)
+    print_text(canvas, 'Hi', (255, 80, 0))      # full-scale (r, g, b)
+    print_text(canvas, 'Eden!')                 # no colour: rainbow, left to right
+
+The colour is optional. A name or a 0–255 tuple is dimmed to `LEVEL` for you,
+so unlike `text6x6.draw()` you can pass full-scale values. The function is
+called `print_text`, not `print`, so that Python's built-in `print()` keeps
+working inside `show.py`.
 
 The `Canvas` class treats all six blocks as one 36×6 grid with x=0 on the
 left, which is what lets text scroll across block boundaries. It derives its
@@ -268,7 +289,8 @@ Useful things to change:
 
 | Want | Where |
 |---|---|
-| Different messages | the `scroll(...)` calls in `run()` |
+| Different messages | the `scroll(...)` and `print_text(...)` calls in `run()` |
+| How long still text stays up | the `pause(canvas, seconds)` after it |
 | Scene order, or drop a scene | `run()` |
 | Scroll speed | `speed_ms` argument to `scroll()` |
 | Blink rate | `blink_ms=(on, off)` argument |
